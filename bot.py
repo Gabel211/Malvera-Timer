@@ -7,6 +7,7 @@ import os
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+# salvam bancile active
 active_timers = set()
 
 @bot.event
@@ -18,47 +19,66 @@ async def on_ready():
     except Exception as e:
         print(e)
 
+# functie generala timer
 async def start_timer(interaction, total_minutes, name):
     if name in active_timers:
-        await interaction.response.send_message(f"❌ Timerul pentru **{name}** este deja activ!", ephemeral=True)
+        await interaction.response.send_message(
+            f"❌ Timerul pentru **{name}** este deja activ!",
+            ephemeral=True
+        )
         return
+
     active_timers.add(name)
+
     await interaction.response.send_message(f"⏳ Timer pornit pentru **{name}**!")
+
     try:
+        # pana la 15 minute inainte
         await asyncio.sleep((total_minutes - 15) * 60)
+
         await interaction.channel.send(f"@everyone ⚠️ {name} poate fi dată în 15 minute!")
+
+        # ultimele 15 minute
         await asyncio.sleep(15 * 60)
+
         await interaction.channel.send(f"💰 {name} poate fi dată ACUM!")
+
     finally:
+        # scoatem banca din lista (se poate folosi din nou)
         active_timers.remove(name)
 
+# 🏦 banci mici (1h45)
 @bot.tree.command(name="alta", description="Timer banca Alta")
 async def alta(interaction: discord.Interaction):
-    await start_timer(interaction, 105, "Banca Alta")
+    await start_timer(interaction, 120, "Banca Alta")
 
 @bot.tree.command(name="vinewood", description="Timer banca Vinewood")
 async def vinewood(interaction: discord.Interaction):
-    await start_timer(interaction, 105, "Banca Vinewood")
+    await start_timer(interaction, 120, "Banca Vinewood")
 
 @bot.tree.command(name="highway", description="Timer banca Highway")
 async def highway(interaction: discord.Interaction):
-    await start_timer(interaction, 105, "Banca Highway")
+    await start_timer(interaction, 120, "Banca Highway")
 
 @bot.tree.command(name="desert", description="Timer banca Desert")
 async def desert(interaction: discord.Interaction):
-    await start_timer(interaction, 105, "Banca Desert")
+    await start_timer(interaction, 120, "Banca Desert")
 
 @bot.tree.command(name="blaine", description="Timer banca Blaine")
 async def blaine(interaction: discord.Interaction):
-    await start_timer(interaction, 105, "Banca Blaine")
+    await start_timer(interaction, 120, "Banca Blaine")
 
 @bot.tree.command(name="biju", description="Timer banca Biju")
 async def biju(interaction: discord.Interaction):
-    await start_timer(interaction, 105, "Banca Biju")
+    await start_timer(interaction, 120, "Banca Biju")
 
 @bot.tree.command(name="pacific", description="Timer banca Pacific")
 async def pacific(interaction: discord.Interaction):
-    await start_timer(interaction, 225, "Banca Pacific")
+    await start_timer(interaction, 240, "Banca Pacific")
 
 token = os.environ.get("DISCORD_BOT_TOKEN")
+if not token:
+    print("Error: DISCORD_BOT_TOKEN not found in environment variables.")
+    exit(1)
+
 bot.run(token)
