@@ -41,7 +41,7 @@ async def start_timer(interaction, total_minutes, name):
         # ultimele 15 minute
         await asyncio.sleep(15 * 60)
 
-        await interaction.channel.send(f"💰 {name} poate fi dată ACUM!")
+       await interaction.channel.send(f"@everyone 💰 {name} poate fi dată ACUM!")
 
     finally:
         # scoatem banca din lista (se poate folosi din nou)
