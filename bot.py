@@ -7,7 +7,6 @@ import os
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# salvam bancile active
 active_timers = set()
 
 @bot.event
@@ -19,35 +18,20 @@ async def on_ready():
     except Exception as e:
         print(e)
 
-# functie generala timer
 async def start_timer(interaction, total_minutes, name):
     if name in active_timers:
-        await interaction.response.send_message(
-            f"❌ Timerul pentru **{name}** este deja activ!",
-            ephemeral=True
-        )
+        await interaction.response.send_message(f"❌ Timerul pentru **{name}** este deja activ!", ephemeral=True)
         return
-
     active_timers.add(name)
-
     await interaction.response.send_message(f"⏳ Timer pornit pentru **{name}**!")
-
     try:
-        # pana la 15 minute inainte
         await asyncio.sleep((total_minutes - 15) * 60)
-
         await interaction.channel.send(f"@everyone ⚠️ {name} poate fi dată în 15 minute!")
-
-        # ultimele 15 minute
         await asyncio.sleep(15 * 60)
-
-       await interaction.channel.send(f"@everyone 💰 {name} poate fi dată ACUM!")
-
+        await interaction.channel.send(f"@everyone 💰 {name} poate fi dată ACUM!")
     finally:
-        # scoatem banca din lista (se poate folosi din nou)
         active_timers.remove(name)
 
-# 🏦 banci mici (1h45)
 @bot.tree.command(name="alta", description="Timer banca Alta")
 async def alta(interaction: discord.Interaction):
     await start_timer(interaction, 120, "Banca Alta")
@@ -77,8 +61,4 @@ async def pacific(interaction: discord.Interaction):
     await start_timer(interaction, 240, "Banca Pacific")
 
 token = os.environ.get("DISCORD_BOT_TOKEN")
-if not token:
-    print("Error: DISCORD_BOT_TOKEN not found in environment variables.")
-    exit(1)
-
 bot.run(token)
